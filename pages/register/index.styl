@@ -1,0 +1,107 @@
+@import '../../layouts/variables.styl';
+
+.page-register
+  .hero-image
+    position relative
+    width 100%
+    &:before
+      display block
+      content ''
+      padding-top ((531/1215)*100)%
+    .hero-image-content
+      positionAbsoluteFull()
+      .image
+        width 100%
+        height auto
+        object-fit cover 
+      .button
+        position absolute
+        bottom 5%
+        right 5%
+  .merit, .flow
+    .box
+      display flex
+      flex-direction column
+      justify-content space-between
+      height 100%
+      max-width 300px
+      margin auto 
+  .merit2
+    background-color $color-grey-super-lite
+    .container
+      max-width 640px
+      .coupon-stamp
+        position relative
+        .coupon-stamp-image
+          position absolute
+          top -15%
+          right -8%
+      .regi-screen
+        position relative
+        .regi-screen-image
+          width 100%
+        .stamp-easy
+          position absolute
+          right -6%
+          top 40%
+        .stamp-search
+          position absolute
+          bottom -6%
+          left -5%
+      .receipts
+        position relative
+        .receipts-image
+          width 100%
+        .stamp-receipt
+          position absolute
+          bottom -6%
+          right -5%
+
+  .register
+    .box
+      padding 5% 1.25rem
+      .box-content
+        width 80%
+        margin auto
+        .box-content
+          width 90%
+    .label
+      font-size 0.8em
+      small
+        color #bebebe
+    .label.required, span.required
+      &:before
+        content '*'
+        color red
+        display inline-block
+        vertical-align super
+    .field
+      .input
+        max-width 400px
+        background-color $color-grey-super-lite
+    .dammy-control
+      position relative
+      .input-dammy
+        position absolute
+      .stripe-input
+        padding-left 1em
+
+
+    .terms
+      position relative
+      border 1px solid
+      padding 40px
+      width 80%
+      height 300px
+      margin auto
+      overflow scroll
+      .terms-title
+        margin-top -1em
+        text-align center
+        font-weight bold
+      .check-terms
+        position absolute
+        bottom 5px
+        left 0
+        right 0
+        text-align center

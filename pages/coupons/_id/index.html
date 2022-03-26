@@ -1,0 +1,132 @@
+<div class="page-coupons-update">
+  <StoreNavBar :active="'coupon'" />
+  <Loading :isShow="is_loading"></Loading>
+  <div class="section">
+    <div class="container">
+      <div class="columns store-tab is-mobile"><!-- tab -->
+        <div class="column p-0 left-col">
+          <a class="tab-button" href="#preview" @click="active = 'base'" :class="{ 'is-active' : active === 'base' }">プレビュー</a>
+        </div> 
+        <div class="column p-0">
+          <div class="columns m-0 right-columns is-mobile">
+            <div class="column p-0">
+              <a class="tab-button" href="#edit" @click="active = 'product'" :class="{ 'is-active' : active === 'product' }">クーポン編集</a>
+            </div>
+          </div>
+        </div> 
+      </div><!-- tab -->
+
+      <div class="columns">
+        <div class="column left-col">
+          <div class="box" id="preview">
+            <CouponPreview 
+              :colorNumber="color_number"
+              :content="content"
+              :name="store_name"
+              :endDate="endDate" /> 
+          </div>
+        </div>
+        <div class="column">
+          <div class="box p-6" id="edit">
+            <div class="field">
+              <p class="label">クーポン内容</p>
+              <div class="control">
+                <input type="telephone" class="input tel" v-model="content" />
+              </div>
+            </div>
+
+            <hr class="hidden" />
+
+            <div class="field">
+              <p class="label">色を選ぶ</p>
+              <div class="control">
+                <CouponColorPicker v-model.number="color_number" />
+              </div>
+            </div> 
+
+            <hr class="hidden" />
+
+            <div class="field">
+              <p class="label">オリジナルクーポン</p>
+              <div class="control">
+                <div class="is-flex is-justify-content-space-between is-align-items-flex-end is-flex-wrap-wrap">
+                  <ImageUpload :image="original_image_source"
+                    @change="changeImageFile(idx, $event)" />
+                  <p class="is-size-7" style="max-width: 245px;">※オリジナルクーポンを表示させたい場合、左枠に追加してください。<br />表示可能データ：300×100px,pdf,png</p>
+                </div>
+              </div>
+            </div> 
+
+            <hr class="hidden" />
+
+            <p class="label">クーポンを表示する期間</p>
+            <div class="is-flex is-align-items-center is-flex-wrap-wrap">
+              <div class="field is-grouped is-align-items-center mb-0">
+                <div class="control mr-0">
+                  <input type="text" class="input year" v-model="start_year" />
+                </div>
+                <span class="is-size-7 has-text-weight-bold mx-1">年</span>
+                <div class="control mr-0">
+                  <input type="text" class="input month" v-model="start_month" />
+                </div>
+                <span class="is-size-7 has-text-weight-bold mx-1">月</span>
+                <div class="control mr-0">
+                  <input type="text" class="input day" v-model="start_day" />
+                </div>
+                <span class="is-size-7 has-text-weight-bold mx-1">日</span>
+              </div>
+              <span class="is-size-6 mx-1">〜</span>
+              <div class="field is-grouped is-align-items-center">
+                <div class="control mr-0">
+                  <input type="text" class="input year" v-model="end_year" />
+                </div>
+                <span class="is-size-7 has-text-weight-bold mx-1">年</span>
+                <div class="control mr-0">
+                  <input type="text" class="input month" v-model="end_month" />
+                </div>
+                <span class="is-size-7 has-text-weight-bold mx-1">月</span>
+                <div class="control mr-0">
+                  <input type="text" class="input day" v-model="end_day" />
+                </div>
+                <span class="is-size-7 has-text-weight-bold mx-1">日</span>
+              </div>
+            </div>
+
+            <hr class="hidden" />
+
+            <div class="field">
+              <p class="label">買取価格のアップ倍率の設定</p>
+              <div class="control">
+                <input type="text" class="input day" v-model.number="rate" />
+                <span class="is-size-7 has-text-weight-bold mx-1">%</span>
+                <span class="is-size-7">※レジ画面でクーポンをオンにした際に適用されます。</span>
+              </div>
+            </div>
+
+            <hr class="hidden" />
+
+            <div class="field">
+              <p class="label">計算シミュレーション</p>
+              <div class="control">
+                <input type="text" class="input year" v-model.number="yen" />
+                <span class="is-size-7 has-text-weight-bold mx-1">円 + {{ rate }}%分 = {{ simulated }}</span>
+              </div>
+            </div>
+
+            <hr class="hidden" />
+            <hr class="hidden" />
+
+            <p class="label">適用する製品の選択</p>
+            <div>
+              <ProductInput v-if="is_product_ready && coupon"
+                :all_categories="all_categories"
+                :categories="coupon_categories" ref="productInput"
+              @submit="submit()" />
+            </div> 
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

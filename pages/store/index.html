@@ -1,0 +1,104 @@
+<div class="page-store">
+  <StoreNavbar :active="'store'" />
+  <Loading :isShow="is_loading" />
+  <div class="section">
+    <div class="container">
+
+      <div class="columns store-tab is-mobile"><!-- tab -->
+        <div class="column is-4 p-0">
+          <a class="tab-button" href="#base" @click="active = 'base'" :class="{ 'is-active' : active === 'base' }">基本情報</a>
+        </div> 
+        <div class="column is-8 p-0">
+          <div class="columns m-0 right-columns is-mobile">
+            <div class="column is-5 p-0">
+              <a class="tab-button" href="#product" @click="active = 'product'" :class="{ 'is-active' : active === 'product' }">取り扱い製品の編集</a>
+            </div>
+            <div class="column is-7 p-0">
+              <a class="tab-button" href="#info" @click="active = 'info'" :class="{ 'is-active' : active === 'info' }">店舗情報編集</a>
+            </div>
+          </div>
+        </div> 
+      </div><!-- tab -->
+
+      <div class="columns">
+        <div class="column is-4">
+          <div class="box p-0">
+            <BasicInfo :basicInfo="base" ref="basicInfo" />
+          </div>
+        </div>
+        <div class="column is-8">
+          <div class="box p-6" id="product">
+            <ProductInput v-if="is_product_ready" :all_categories="all_categories" :categories="categories" ref="productInput"
+              @submit="submitData('product', $event)" />
+          </div>
+
+          <div class="box p-6" id="info">
+            <InfoInput :storeInfo="store" ref="infoInput" @submit="submitData('info', $event)"/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <SimpleConfirm
+    :buttons="['OK']"
+    :message="'変更が正常に保存されました！'"
+    :hasClose="false"
+    :show="does_show_application_success"
+    :messageClass="['has-text-primary']"
+    @button="does_show_application_success = false"></SimpleConfirm>
+
+  <SimpleConfirm
+    :buttons="['戻る']"
+    :message="'必要項目を入力してください。'"
+    :hasClose="false"
+    :show="does_show_application_failure"
+    :messageClass="['has-text-danger']"
+    @button="does_show_application_failure = false"></SimpleConfirm>  
+
+  <SimpleConfirm :show="does_show_first_input"
+    @cancel="does_show_first_input = false;">
+    <div>
+      <p class="has-text-weight-bold has-text-primary">店舗名・住所・電話番号（固定）を再度ご確認ください</p>
+      <hr class="hidden" />
+
+      <div class="is-flex is-align-items-center is-justify-content-center mt-3">
+        <div class="image is-32x32 mr-3">
+          <img src="/images/components/store/product-input/attention.png">
+        </div>
+        <p class="has-text-weight-bold is-size-7">以下の項目は一度確定したら、変更できません。<br />再度お確かめの上、保存してください。</p>
+      </div>
+
+      <hr class="hidden" />
+
+      <div class="confirm-data">
+        <div class="is-flex is-align-items-center is-justify-content-flex-start mb-3">
+          <p class="is-size-7 mr-5 confirm-data-label">店舗名</p>
+          <p class="is-size-6">{{ confirm_base.name }}</p>
+        </div>
+        <div class="is-flex is-align-items-center is-justify-content-flex-start mb-3">
+          <p class="is-size-7 mr-5 confirm-data-label">住所</p>
+          <div class="is-size-6">
+            <p>〒 {{ confirm_base.zip_code }}</p>
+            <p>{{ confirm_base.address }}</p>
+          </div>
+        </div>
+        <div class="is-flex is-align-items-center is-justify-content-flex-start mb-3">
+          <p class="is-size-7 mr-5 confirm-data-label">電話番号（固定）</p>
+          <p class="is-size-6">{{ confirm_base.phone_number }}</p>
+        </div>
+      </div>
+
+      <hr class="hidden" />
+
+      <div class="buttons is-centered">
+        <a class="button is-primary is-outlined" @click="does_show_first_input = false;">
+          編集画面に戻る
+        </a>
+        <a class="button is-primary" @click="register">
+          内容を確定して保存する
+        </a>
+      </div>
+    </div>
+  </SimpleConfirm> 
+</div>

@@ -1,0 +1,115 @@
+@import './variables.styl';
+body
+  color $color-text
+  box-sizing border-box
+
+.button
+  border-radius 1em
+  font-weight bold
+  padding-bottom calc(1.0em - 1px)
+  padding-left 1.5em
+  padding-right 1.5em
+  padding-top calc(1.0em - 1px)
+  &.is-secondary
+    background-color $color-secondary
+    border-color: transparent
+    color $color-secondary-invert 
+  &.is-bordered
+    border 2px solid #fff
+    border-radius 15px
+    box-shadow 0px 4px 3px 0px #8c8c8c
+
+.select select, .textarea, .input
+  background-color $color-grey-lite
+  border-color transparent
+  color $color-text
+  box-shadow none
+  &.transparent
+    background-color transparent
+    border none
+.input
+  height 2rem
+
+
+.caption
+  display flex
+  align-items center
+  font-weight bold
+  font-size 1.5em
+  margin-bottom 1em
+  &:before
+    display inline-block
+    content ''
+    width 0.3em
+    height 1em
+    background-color $color-primary
+    margin-right .5em
+    border 0px solid
+    border-radius 1em 
+
+hr.hidden
+  border none
+  background-color transparent
+
+.table
+  &.is-striped
+    thead
+      tr
+        background-color $color-grey-lite
+    tbody
+      tr:not(.is-selected):nth-child(even)
+        background-color $color-grey-lite
+  &.is-borderless
+    td, th, tr
+      border 0 !important
+
+.store-tab
+  border-bottom 2px solid #fff
+  font-weight bold
+  color $color-text
+  height 3em
+  .right-columns
+    height 100%
+  .tab-button
+    color inherit
+    display inline-flex
+    height 100%
+    align-items center
+    justify-content flex-start
+    &.is-active
+      color $color-primary
+      border-bottom 2px solid 
+
+.modal-content
+  .modal-alert
+    background-color #fff
+    border 0px solid
+    border-radius 20px
+    .modal-alert-header
+      display flex
+      align-items center
+      justify-content space-between
+      padding-top 2em
+      padding-left 3em
+      padding-right 1em
+      .modal-alert-header-title
+        font-weight bold
+        font-size 14px
+        color $color-primary
+      .modal-alert-header-close
+        content url(/images/common/icon-times-g.png)
+        display block
+        width 36px
+        height auto
+        margin-top -1em
+    .modal-alert-content
+      padding 1em 3em 3em 3em
+      .modal-alert-attention
+        display flex
+        align-items center
+        font-weight bold
+        color $color-text-deep
+        &:before
+          display block
+          content url(/images/common/icon-attention.png)
+          margin-right 1em

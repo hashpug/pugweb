@@ -1,0 +1,29 @@
+<div class="page-regi">
+  <StoreNavBar :active="'regi'" />
+  <Loading :isShow="is_loading"></Loading>
+
+  <div class="page-regi-container">
+    <div class="left">
+      <CategorySelect :categories="categories"
+        @change="onChangeCategory" ref="categorySelect" />
+    </div>
+    <div class="center" ref="center">
+      <TabBar @change="onChangeTab" :active_key="tab_active" />
+      <TouchPanel ref="touchPanel" :categories="categories"
+          :isOnlyFavorite="doesShowFavorite"
+          @add="onAddProduct" @remove="onRemoveProduct"
+          @addOther="onAddOtherItem"></TouchPanel>
+    </div>
+    <div class="right">
+      <Calculator :products="checked_products" @remove="onRemoveProduct" ref="calculator" :otherItems="other_items"
+        @removeOther="onRemoveOtherItem"></Calculator>
+
+      <div class="is-flex is-align-items-center mx-6">
+        <div class="is-size-6 has-text-weight-bold">お客様にこちらの金額で問題ないか確認後、[確定]を押してください。</div>
+        <a class="button is-bordered is-secondary is-large"
+          @click="submit">確定</a>
+
+      </div>
+    </div>
+  </div>
+</div>

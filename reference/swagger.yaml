@@ -1,0 +1,3251 @@
+swagger: "2.0"
+info:
+  title: Risapen Navi API
+  description: Risapen Navi API Reference
+  version: 1.0.0
+host: risapennavi.com
+basePath: /api/v1
+tags:
+  - name: users
+    description: ユーザー情報
+  - name: shops
+    description: 店舗情報
+  - name: categories
+    description: カテゴリ情報
+  - name: subcategories
+    description: サブカテゴリ情報
+  - name: detailed_categories
+    description: 詳細カテゴリ情報
+  - name: coupons
+    description: クーポン情報
+  - name: purchases
+    description: 買取情報
+  - name: reviews
+    description: レビュー情報
+schemes:
+  - https
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+paths:
+# ユーザーAPI
+  # 新規登録
+  /users.json:
+    post:
+      summary: "新規登録"
+      tags:
+        - users
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+                description: メールアドレス
+              password:
+                type: string
+                description: パスワード
+              pin:
+                type: string
+                description: 暗証番号
+              credit_card:
+                type: object
+                properties:
+                  selected:
+                    type: boolean
+                    description: クレジットカードフラグ
+                  number:
+                    type: string
+                    description: クレジットカード番号
+                  expiration_date:
+                    type: string
+                    description: 有効期限
+                  security_code:
+                    type: string
+                    description: セキュリティコード
+                  name:
+                    type: string
+                    description: 名義
+              direct_debit:
+                type: object
+                properties:
+                  selected:
+                    type: boolean
+                    description: 口座引き落としフラグ
+                  bank_name:
+                    type: string
+                    description: 金融機関名
+                  bank_code:
+                    type: string
+                    description: 金融機関コード
+                  branch_name:
+                    type: string
+                    description: 支店名
+                  branch_code:
+                    type: string
+                    description: 支店コード
+                  account_type:
+                    type: string
+                    description: 口座種別
+                  account_number:
+                    type: string
+                    description: 口座番号
+                  account_name_kana:
+                    type: string
+                    description: 口座名義（カナ）
+                  account_id:
+                    type: string
+                    description: 口座ID
+              invite:
+                type: object
+                properties:
+                  selected:
+                    type: boolean
+                    description: 招待者フラグ
+                  code:
+                    type: string
+                    description: 招待者コード
+                  email:
+                    type: string
+                    format: email
+                    description: 招待者メールアドレス
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: ユーザー登録に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/private_user"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  # ログイン
+  /users/login.json:
+    post:
+      summary: "ログイン"
+      tags:
+        - users
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                format: email
+                description: メールアドレス
+              password:
+                type: string
+                description: パスワード
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 認証に成功しました.
+                description: 返却メッセージ
+              data:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: 認証トークン
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        401:
+          description: 失敗（認証エラー）
+          schema:
+            $ref: "#/definitions/401"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  # ログアウト
+  /users/logout.json:
+    post:
+      summary: "ログアウト"
+      tags:
+        - users
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: ログアウトに成功しました.
+                description: 返却メッセージ
+              data:
+                type: object
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+# パスワード再設定メール送信
+  /users/forgot-password.json:
+    post:
+      summary: パスワード再設定メール送信
+      tags:
+        - users
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+                description: メールアドレス
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: パスワード再設定メールを送信しました.
+                description: 返却メッセージ
+              data:
+                type: object
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  # パスワード再設定
+  /users/resetting-password.json:
+    post:
+      summary: パスワード再設定
+      tags:
+        - users
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              reset_token:
+                type: string
+                description: パスワードリセットトークン
+              password:
+                type: string
+                description: パスワード
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: パスワードを再設定しました.
+                description: 返却メッセージ
+              data:
+                type: object
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  # 取得
+  /private/users.json:
+    get:
+      summary: 取得
+      tags:
+        - users
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: ユーザー情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/private_user"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        401:
+          description: 失敗（認証エラー）
+          schema:
+            $ref: "#/definitions/401"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  # 暗証番号認証
+  /private/users/authenticate-pin.json:
+    post:
+      summary: "暗証番号認証"
+      tags:
+        - users
+      security:
+        - Bearer: []
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - pin
+            properties:
+              pin:
+                type: string
+                description: 暗証番号
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 暗証番号認証に成功しました.
+                description: 返却メッセージ
+              data:
+                type: object
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        401:
+          description: 失敗（認証エラー）
+          schema:
+            $ref: "#/definitions/401"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+# 暗証番号再設定メール送信
+  /private/users/forgot-pin.json:
+    post:
+      summary: 暗証番号再設定メール送信
+      tags:
+        - users
+      security:
+        - Bearer: []
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 暗証番号再設定メールを送信しました.
+                description: 返却メッセージ
+              data:
+                type: object
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  # 暗証番号再設定
+  /private/users/resetting-pin.json:
+    post:
+      summary: 暗証番号再設定
+      tags:
+        - users
+      security:
+        - Bearer: []
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              reset_token:
+                type: string
+                description: 暗証番号リセットトークン
+              pin:
+                type: string
+                description: 暗証番号
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 暗証番号を再設定しました.
+                description: 返却メッセージ
+              data:
+                type: object
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  # 退会
+  /private/users/withdrawal.json:
+    post:
+      summary: "退会"
+      tags:
+        - users
+      security:
+        - Bearer: []
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                format: email
+                description: メールアドレス
+              password:
+                type: string
+                description: パスワード
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 退会に成功しました.
+                description: 返却メッセージ
+              data:
+                type: object
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        401:
+          description: 失敗（認証エラー）
+          schema:
+            $ref: "#/definitions/401"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+
+# 店舗API
+  # 店舗一覧取得
+  /shops.json:
+    get:
+      summary: "店舗検索"
+      tags:
+        - shops
+      parameters:
+        - name: limit
+          in: query
+          type: string
+          required: false
+          description: 1ページあたりの件数
+        - name: page
+          in: query
+          type: string
+          required: false
+          description: 取得ページ
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 店舗情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/shop"
+              limit:
+                type: number
+                description: 1ページあたりの件数
+              page:
+                type: number
+                description: 現在のページ
+              total_page:
+                type: number
+                description: 合計ページ数
+
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  # 店舗詳細取得
+  /shops/{shop_id}.json:
+    get:
+      summary: "店舗詳細取得"
+      tags:
+        - shops
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 店舗情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/shop"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  # 登録店舗一覧取得
+  /private/shops.json:
+    get:
+      summary: "登録店舗一覧取得"
+      tags:
+        - shops
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 登録店舗情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/private_shop"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+    post:
+      summary: "新規登録"
+      tags:
+        - shops
+      security:
+        - Bearer: []
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+                description: 店舗名
+              images:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    source:
+                      type: string
+                      description: 画像URL
+              purchase:
+                type: object
+                description: 買取方法
+                properties:
+                  shop:
+                    type: boolean
+                    description: 店頭買取フラグ
+                  home:
+                    type: boolean
+                    description: 出張買取フラグ
+                  delivery:
+                    type: boolean
+                    description: 宅配買取フラグ
+              comment:
+                type: string
+                description: 一言
+              business_hours:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    holiday:
+                      type: boolean
+                      description: 休業日フラグ
+                    start_time:
+                      type: string
+                      description: 開始時間
+                    end_time:
+                      type: string
+                      description: 終了時間
+              zip_code:
+                type: string
+                description: 郵便番号
+              prefectures:
+                type: string
+                description: 都道府県
+              city:
+                type: string
+                description: 市区町村
+              address:
+                type: string
+                description: 住所
+              phone_number:
+                type: string
+                description: 電話番号
+              phone_number_sub:
+                type: object
+                properties:
+                  phone_number:
+                    type: string
+                    description: 電話番号(サブ)
+                  note:
+                    type: string
+                    description: 備考
+              url:
+                type: string
+                description: ホームページ
+              home_purchase_url:
+                type: string
+                description: 出張買取ページURL
+              delivery_purchase_url:
+                type: string
+                description: 宅配買取ページURL
+              categories:
+                type: array
+                items:
+                  $ref: "#/definitions/private_dealing_category"
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 店舗情報登録に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/private_shop"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  # 取得
+  /private/shops/{shop_id}.json:
+    get:
+      summary: "登録店舗詳細取得"
+      tags:
+        - shops
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 店舗情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/private_shop"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+  # 更新
+    put:
+      summary: "更新"
+      tags:
+        - shops
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            properties:
+              images:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    source:
+                      type: string
+                      description: 画像URL
+              purchase:
+                type: object
+                description: 買取方法
+                properties:
+                  shop:
+                    type: boolean
+                    description: 店頭買取フラグ
+                  home:
+                    type: boolean
+                    description: 出張買取フラグ
+                  delivery:
+                    type: boolean
+                    description: 宅配買取フラグ
+              comment:
+                type: string
+                description: 一言
+              business_hours:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    holiday:
+                      type: boolean
+                      description: 休業日フラグ
+                    start_time:
+                      type: string
+                      description: 開始時間
+                    end_time:
+                      type: string
+                      description: 終了時間
+              zip_code:
+                type: string
+                description: 郵便番号
+              prefectures:
+                type: string
+                description: 都道府県
+              city:
+                type: string
+                description: 市区町村
+              address:
+                type: string
+                description: 住所
+              phone_number:
+                type: string
+                description: 電話番号
+              phone_number_sub:
+                type: object
+                properties:
+                  phone_number:
+                    type: string
+                    description: 電話番号(サブ)
+                  note:
+                    type: string
+                    description: 備考
+              url:
+                type: string
+                description: ホームページ
+              home_purchase_url:
+                type: string
+                description: 出張買取ページURL
+              delivery_purchase_url:
+                type: string
+                description: 宅配買取ページURL
+              dealing_categories:
+                type: array
+                items:
+                  $ref: "#/definitions/private_dealing_category"
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 店舗情報更新に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/private_shop"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  /private/shops/{shop_id}/cash-register.json:
+    get:
+      summary: レジ設定取得
+      tags:
+        - shops
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 店舗レジ設定情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/cash_register"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+    put:
+      summary: レジ設定更新
+      tags:
+        - shops
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              advertisement:
+                type: string
+                description: 広告
+              categories:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: カテゴリID
+                    favorite:
+                      type: boolean
+                      description: お気に入りフラグ
+                    subcategories:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            description: サブカテゴリID
+                          favorite:
+                            type: boolean
+                            description: お気に入りフラグ
+                          detailed_categories:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                  description: 詳細カテゴリID
+                                favorite:
+                                  type: boolean
+                                  description: お気に入りフラグ
+              cashiers:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: 担当者氏名
+
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 店舗レジ設定情報更新に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/cash_register"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+
+# カテゴリ情報
+  # 一覧取得
+  /categories.json:
+    get:
+      summary: カテゴリ一覧取得
+      tags:
+        - categories
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 製品カテゴリ情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/dealing_category"
+
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  # 一覧取得
+  /private/shops/{shop_id}/categories.json:
+    get:
+      summary: 取扱製品カテゴリ一覧取得
+      tags:
+        - categories
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 取扱製品カテゴリ情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/private_dealing_category"
+
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  # 取扱製品カテゴリ編集
+  /private/shops/{shop_id}/categories/{category_id}.json:
+    put:
+      summary: 取扱製品カテゴリ編集
+      tags:
+        - categories
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: category_id
+          in: path
+          type: string
+          required: true
+          description: カテゴリID
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              available:
+                type: boolean
+                description: 買取可能フラグ
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 取扱製品カテゴリ情報更新に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/private_dealing_category"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+# サブカテゴリ
+  /categories/{category_id}/subcategories.json:
+    get:
+      summary: 製品サブカテゴリ一覧取得
+      tags:
+        - subcategories
+      parameters:
+        - name: category_id
+          in: path
+          type: string
+          required: true
+          description: カテゴリID
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 製品サブカテゴリ情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/dealing_subcategory"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  /private/shops/{shop_id}/categories/{category_id}/subcategories.json:
+    get:
+      summary: 取扱製品サブカテゴリ一覧取得
+      tags:
+        - subcategories
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: category_id
+          in: path
+          type: string
+          required: true
+          description: カテゴリID
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 取扱製品サブカテゴリ情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/private_dealing_subcategory"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  /private/shops/{shop_id}/categories/{category_id}/subcategories/{subcategory_id}.json:
+    put:
+      summary: 取扱製品サブカテゴリ編集
+      tags:
+        - subcategories
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: category_id
+          in: path
+          type: string
+          required: true
+          description: カテゴリID
+        - name: subcategory_id
+          in: path
+          type: string
+          required: true
+          description: サブカテゴリID
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              available:
+                type: boolean
+                description: 買取可能フラグ
+              unit_price:
+                type: number
+                description: 単価
+              favorite:
+                type: boolean
+                description: お気に入りフラグ
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 取扱製品サブカテゴリ情報更新に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/private_dealing_subcategory"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  # 詳細カテゴリ
+  /private/shops/{shop_id}/categories/{category_id}/subcategories/{subcategory_id}/detailed-categories.json:
+    get:
+      summary: "取扱製品詳細カテゴリ一覧取得"
+      tags:
+        - detailed_categories
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: category_id
+          in: path
+          type: string
+          required: true
+          description: カテゴリID
+        - name: subcategory_id
+          in: path
+          type: string
+          required: true
+          description: サブカテゴリID
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 取扱製品詳細カテゴリ情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/private_dealing_detailed_category"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+    post:
+      summary: "取扱製品詳細カテゴリ新規登録"
+      tags:
+        - detailed_categories
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: category_id
+          in: path
+          type: string
+          required: true
+          description: カテゴリID
+        - name: subcategory_id
+          in: path
+          type: string
+          required: true
+          description: サブカテゴリID
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              available:
+                type: boolean
+                description: 買取可能フラグ
+              name:
+                type: string
+                description: 詳細カテゴリ名称
+              unit:
+                type: string
+                description: 単位
+              unit_price:
+                type: number
+                description: 単価
+              favorite:
+                type: boolean
+                description: お気に入りフラグ
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 取扱製品詳細カテゴリ情報登録に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/private_dealing_detailed_category"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  /private/shops/{shop_id}/categories/{category_id}/subcategories/{subcategory_id}/detailed-categories/{detailed_category_id}.json:
+    get:
+      summary: 取扱製品詳細カテゴリ取得
+      tags:
+        - detailed_categories
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: category_id
+          in: path
+          type: string
+          required: true
+          description: カテゴリID
+        - name: subcategory_id
+          in: path
+          type: string
+          required: true
+          description: サブカテゴリID
+        - name: detailed_category_id
+          in: path
+          type: string
+          required: true
+          description: 詳細カテゴリID
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 取扱製品詳細カテゴリ情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/private_dealing_detailed_category"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+    put:
+      summary: 取扱製品詳細カテゴリ編集
+      tags:
+        - detailed_categories
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: category_id
+          in: path
+          type: string
+          required: true
+          description: カテゴリID
+        - name: subcategory_id
+          in: path
+          type: string
+          required: true
+          description: サブカテゴリID
+        - name: detailed_category_id
+          in: path
+          type: string
+          required: true
+          description: 詳細カテゴリID
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              available:
+                type: boolean
+                description: 買取可能フラグ
+              name:
+                type: string
+                description: 詳細カテゴリ名称
+              unit:
+                type: string
+                description: 単位
+              unit_price:
+                type: number
+                description: 単価
+              favorite:
+                type: boolean
+                description: お気に入りフラグ
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 取扱製品詳細カテゴリ情報編集に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/private_dealing_detailed_category"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+    delete:
+      summary: 取扱製品詳細カテゴリ削除
+      tags:
+        - detailed_categories
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: category_id
+          in: path
+          type: string
+          required: true
+          description: カテゴリID
+        - name: subcategory_id
+          in: path
+          type: string
+          required: true
+          description: サブカテゴリID
+        - name: detailed_category_id
+          in: path
+          type: string
+          required: true
+          description: 詳細カテゴリID
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 取扱製品詳細カテゴリ情報削除に成功しました.
+                description: 返却メッセージ
+              data:
+                type: object
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  # クーポン情報
+  /shops/{shop_id}/coupons.json:
+    get:
+      summary: クーポン一覧取得
+      tags:
+        - coupons
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: クーポン一覧取得に成功しました.
+                description: 返却メッセージ
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/coupon"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  /shops/{shop_id}/coupons/{coupon_id}.json:
+    get:
+      summary: クーポン詳細取得
+      tags:
+        - coupons
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: couopn_id
+          in: path
+          type: string
+          required: true
+          description: クーポンID
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: クーポン情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/coupon"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  # 一覧取得
+  /private/shops/{shop_id}/coupons.json:
+    get:
+      summary: クーポン一覧取得
+      tags:
+        - coupons
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: クーポン一覧取得に成功しました.
+                description: 返却メッセージ
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/private_coupon"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+    post:
+      summary: クーポン新規登録
+      tags:
+        - coupons
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              content:
+                type: string
+                description: 内容
+              color:
+                type: string
+                description: 色
+              original_coupon_source:
+                type: string
+                description: オリジナルクーポン画像URL
+              start_date:
+                type: string
+                description: 開始日
+              end_date:
+                type: string
+                description: 終了日
+              rate:
+                type: number
+                description: 割合
+              categories:
+                type: array
+                items:
+                  $ref: "#/definitions/private_coupon_category"
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: クーポン登録に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/private_coupon"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  /private/shops/{shop_id}/coupons/{coupon_id}.json:
+    get:
+      summary: クーポン情報取得
+      tags:
+        - coupons
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: coupon_id
+          in: path
+          type: string
+          required: true
+          description: クーポンID
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: クーポン情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/private_coupon"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+    put:
+      summary: クーポン情報編集
+      tags:
+        - coupons
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: coupon_id
+          in: path
+          type: string
+          required: true
+          description: クーポンID
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              content:
+                type: string
+                description: 内容
+              color:
+                type: string
+                description: 色
+              original_coupon_source:
+                type: string
+                description: オリジナルクーポン画像URL
+              start_date:
+                type: string
+                description: 開始日
+              end_date:
+                type: string
+                description: 終了日
+              rate:
+                type: number
+                description: 割合
+              categories:
+                type: array
+                items:
+                  $ref: "#/definitions/private_coupon_category"
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: クーポン情報更新に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/private_coupon"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+    delete:
+      summary: クーポン情報削除
+      tags:
+        - coupons
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: coupon_id
+          in: path
+          type: string
+          required: true
+          description: クーポンID
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: クーポン情報削除に成功しました.
+                description: 返却メッセージ
+              data:
+                type: object
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+# 買取情報
+  /private/shops/{shop_id}/purchases.json:
+    get:
+      summary: 買取情報一覧取得
+      tags:
+        - purchases
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: limit
+          in: query
+          type: string
+          required: false
+          description: 1ページあたりの件数
+        - name: page
+          in: query
+          type: string
+          required: false
+          description: 取得ページ
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 買取情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/purchase"
+              limit:
+                type: number
+                description: 1ページあたりの件数
+              page:
+                type: number
+                description: 現在のページ
+              total_page:
+                type: number
+                description: 合計ページ数
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+    post:
+      summary: 買取情報新規登録
+      tags:
+        - purchases
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              datetime:
+                type: string
+                format: date-time
+                description: 買取日時
+              receipt_number:
+                type: string
+                description: レシート番号
+              cashier_id:
+                type: string
+                description: 担当者ID
+              price:
+                type: number
+                description: 買取価格
+              items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: 品目
+                    unit:
+                      type: string
+                      description: 単位
+                    unit_price:
+                      type: number
+                      description: 単価
+                    quantity:
+                      type: number
+                      description: 数量
+                    coupon:
+                      type: object
+                      properties:
+                        applied:
+                          type: boolean
+                          description: クーポン適用フラグ
+                        rate:
+                          type: number
+                          description: 割合
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 買取情報登録に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/purchase"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+  /private/shops/{shop_id}/purchases/{purchase_id}.json:
+    get:
+      summary: 買取情報詳細取得
+      tags:
+        - purchases
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: purchase_id
+          in: path
+          type: string
+          required: true
+          description: 買取情報ID
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 買取情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/purchase"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+    put:
+      summary: 買取情報編集
+      tags:
+        - purchases
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: purchase_id
+          in: path
+          type: string
+          required: true
+          description: 買取情報ID
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              datetime:
+                type: string
+                format: date-time
+                description: 買取日時
+              receipt_number:
+                type: string
+                description: レシート番号
+              cashier_id:
+                type: string
+                description: 担当者ID
+              price:
+                type: number
+                description: 買取価格
+              items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: 品目
+                    unit:
+                      type: string
+                      description: 単位
+                    unit_price:
+                      type: number
+                      description: 単価
+                    quantity:
+                      type: number
+                      description: 数量
+                    coupon:
+                      type: object
+                      properties:
+                        applied:
+                          type: boolean
+                          description: クーポン適用フラグ
+                        rate:
+                          type: number
+                          description: 割合
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 買取情報更新に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/purchase"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+    delete:
+      summary: 買取情報削除
+      tags:
+        - purchases
+      security:
+        - Bearer: []
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: purchase_id
+          in: path
+          type: string
+          required: true
+          description: 買取情報ID
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: 買取情報削除に成功しました.
+                description: 返却メッセージ
+              data:
+                type: object
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        403:
+          description: 失敗（アクセス拒否エラー）
+          schema:
+            $ref: "#/definitions/403"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+# レビュー情報
+  /shops/{shop_id}/reviews.json:
+    get:
+      summary: レビュー一覧取得
+      tags:
+        - reviews
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: limit
+          in: query
+          type: string
+          required: false
+          description: 1ページあたりの件数
+        - name: page
+          in: query
+          type: string
+          required: false
+          description: 取得ページ
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: レビュー情報取得に成功しました.
+                description: 返却メッセージ
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/review"
+              limit:
+                type: number
+                description: 1ページあたりの件数
+              page:
+                type: number
+                description: 現在のページ
+              total_page:
+                type: number
+                description: 合計ページ数
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+    post:
+      summary: レビュー新規登録
+      tags:
+        - reviews
+      parameters:
+        - name: shop_id
+          in: path
+          type: string
+          required: true
+          description: 店舗ID
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              star:
+                type: number
+                description: 星の数
+              comment:
+                type: string
+                description: コメント
+      responses:
+        200:
+          description: 正常終了
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: boolean
+                example: true
+                description: 処理結果
+              message:
+                type: string
+                example: レビュー情報登録に成功しました.
+                description: 返却メッセージ
+              data:
+                $ref: "#/definitions/review"
+        400:
+          description: 失敗（クライアントエラー）
+          schema:
+            $ref: "#/definitions/400"
+        500:
+          description: 失敗（サーバーエラー）
+          schema:
+            $ref: "#/definitions/500"
+
+# スキーマオブジェクト定義
+definitions:
+# ユーザー
+  private_user:
+    type: object
+    properties:
+      id:
+        type: string
+        description: ユーザーID
+      email:
+        type: string
+        format: email
+        description: メールアドレス
+      credit_card:
+        type: object
+        properties:
+          selected:
+            type: boolean
+            description: クレジットカードフラグ
+          number:
+            type: string
+            description: クレジットカード番号
+          expiration_date:
+            type: string
+            description: 有効期限
+          security_code:
+            type: string
+            description: セキュリティコード
+          name:
+            type: string
+            description: 名義
+      direct_debit:
+        type: object
+        properties:
+          selected:
+            type: boolean
+            description: 口座引き落としフラグ
+          bank_name:
+            type: string
+            description: 金融機関名
+          bank_code:
+            type: string
+            description: 金融機関コード
+          branch_name:
+            type: string
+            description: 支店名
+          branch_code:
+            type: string
+            description: 支店コード
+          account_type:
+            type: string
+            description: 口座種別
+          account_number:
+            type: string
+            description: 口座番号
+          account_name_kana:
+            type: string
+            description: 口座名義（カナ）
+          account_id:
+            type: string
+            description: 口座ID
+      invite:
+        type: object
+        properties:
+          selected:
+            type: boolean
+            description: 招待者フラグ
+          code:
+            type: string
+            description: 招待者コード
+          email:
+            type: string
+            format: email
+            description: 招待者メールアドレス
+
+# 店舗
+  shop:
+    type: object
+    properties:
+      id:
+        type: string
+        description: 店舗ID
+      name:
+        type: string
+        description: 店舗名
+      images:
+        type: array
+        items:
+          type: object
+          properties:
+            source:
+              type: string
+              description: 画像URL
+      purchase:
+        type: object
+        description: 買取方法
+        properties:
+          shop:
+            type: boolean
+            description: 店頭買取フラグ
+          home:
+            type: boolean
+            description: 出張買取フラグ
+          delivery:
+            type: boolean
+            description: 宅配買取フラグ
+      comment:
+        type: string
+        description: 一言
+      business_hours:
+        type: array
+        items:
+          type: object
+          properties:
+            holiday:
+              type: boolean
+              description: 休業日フラグ
+            start_time:
+              type: string
+              description: 開始時間
+            end_time:
+              type: string
+              description: 終了時間
+      zip_code:
+        type: string
+        description: 郵便番号
+      prefectures:
+        type: string
+        description: 都道府県
+      city:
+        type: string
+        description: 市区町村
+      address:
+        type: string
+        description: 住所
+      phone_number:
+        type: string
+        description: 電話番号
+      phone_number_sub:
+        type: object
+        properties:
+          phone_number:
+            type: string
+            description: 電話番号(サブ)
+          note:
+            type: string
+            description: 備考
+      url:
+        type: string
+        description: ホームページ
+      home_purchase_url:
+        type: string
+        description: 出張買取ページURL
+      delivery_purchase_url:
+        type: string
+        description: 宅配買取ページURL
+      dealing_categories:
+        type: array
+        items:
+          $ref: "#/definitions/dealing_category"
+      review_summary:
+        type: object
+        properties:
+          average_evaluation:
+            type: number
+            description: 平均評価
+          total_evaluation_number:
+            type: number
+            description: 総評価数
+          number_of_evaluations:
+            type: array
+            items:
+              type: number
+              description: 星数別評価数
+              example:
+                - 0
+                - 0
+                - 0
+                - 0
+                - 0
+
+  private_shop:
+    type: object
+    properties:
+      id:
+        type: string
+        description: 店舗ID
+      name:
+        type: string
+        description: 店舗名
+      images:
+        type: array
+        items:
+          type: object
+          properties:
+            source:
+              type: string
+              description: 画像URL
+      purchase:
+        type: object
+        description: 買取方法
+        properties:
+          shop:
+            type: boolean
+            description: 店頭買取フラグ
+          home:
+            type: boolean
+            description: 出張買取フラグ
+          delivery:
+            type: boolean
+            description: 宅配買取フラグ
+      comment:
+        type: string
+        description: 一言
+      business_hours:
+        type: array
+        items:
+          type: object
+          properties:
+            holiday:
+              type: boolean
+              description: 休業日フラグ
+            start_time:
+              type: string
+              description: 開始時間
+            end_time:
+              type: string
+              description: 終了時間
+      zip_code:
+        type: string
+        description: 郵便番号
+      prefectures:
+        type: string
+        description: 都道府県
+      city:
+        type: string
+        description: 市区町村
+      address:
+        type: string
+        description: 住所
+      phone_number:
+        type: string
+        description: 電話番号
+      phone_number_sub:
+        type: object
+        properties:
+          phone_number:
+            type: string
+            description: 電話番号(サブ)
+          note:
+            type: string
+            description: 備考
+      url:
+        type: string
+        description: ホームページ
+      home_purchase_url:
+        type: string
+        description: 出張買取ページURL
+      delivery_purchase_url:
+        type: string
+        description: 宅配買取ページURL
+      dealing_categories:
+        type: array
+        items:
+          $ref: "#/definitions/private_dealing_category"
+
+# 取扱製品カテゴリ
+  dealing_category:
+    type: object
+    properties:
+      id:
+        type: string
+        description: カテゴリID
+      name:
+        type: string
+        description: カテゴリ名称
+      subcategories:
+        type: array
+        items:
+          $ref: "#/definitions/dealing_subcategory"
+
+  private_dealing_category:
+    type: object
+    properties:
+      id:
+        type: string
+        description: カテゴリID
+      available:
+        type: boolean
+        description: 買取可能フラグ
+      name:
+        type: string
+        description: カテゴリ名称
+      subcategories:
+        type: array
+        items:
+          $ref: "#/definitions/private_dealing_subcategory"
+
+  # 取扱製品サブカテゴリ
+  dealing_subcategory:
+    type: object
+    properties:
+      id:
+        type: string
+        description: サブカテゴリID
+      name:
+        type: string
+        description: サブカテゴリ名称
+      unit:
+        type: string
+        description: 単位
+      unit_price:
+        type: number
+        description: 単価
+      detailed_categories:
+        type: array
+        items:
+          $ref: "#/definitions/dealing_detailed_category"
+
+  private_dealing_subcategory:
+    type: object
+    properties:
+      id:
+        type: string
+        description: サブカテゴリID
+      available:
+        type: boolean
+        description: 買取可能フラグ
+      name:
+        type: string
+        description: サブカテゴリ名称
+      unit:
+        type: string
+        description: 単位
+      unit_price:
+        type: number
+        description: 単価
+      favorite:
+        type: boolean
+        description: お気に入りフラグ
+      detailed_categories:
+        type: array
+        items:
+          $ref: "#/definitions/private_dealing_detailed_category"
+
+  # 取扱製品詳細カテゴリ
+  dealing_detailed_category:
+    type: object
+    properties:
+      id:
+        type: string
+        description: 詳細カテゴリID
+      name:
+        type: string
+        description: 詳細カテゴリ名称
+      unit:
+        type: string
+        description: 単位
+      unit_price:
+        type: number
+        description: 単価
+
+  private_dealing_detailed_category:
+    type: object
+    properties:
+      id:
+        type: string
+        description: 詳細カテゴリID
+      available:
+        type: boolean
+        description: 買取可能フラグ
+      name:
+        type: string
+        description: 詳細カテゴリ名称
+      unit:
+        type: string
+        description: 単位
+      unit_price:
+        type: number
+        description: 単価
+      favorite:
+        type: boolean
+        description: お気に入りフラグ
+
+# クーポン
+  coupon:
+    type: object
+    properties:
+      id:
+        type: string
+        description: クーポンID
+      content:
+        type: string
+        description: 内容
+      color:
+        type: string
+        description: 色
+      original_coupon_source:
+        type: string
+        description: オリジナルクーポン画像URL
+      start_date:
+        type: string
+        description: 開始日
+      end_date:
+        type: string
+        description: 終了日
+      rate:
+        type: number
+        description: 割合
+      categories:
+        type: array
+        items:
+          $ref: "#/definitions/dealing_category"
+
+  private_coupon:
+    type: object
+    properties:
+      id:
+        type: string
+        description: クーポンID
+      content:
+        type: string
+        description: 内容
+      color:
+        type: string
+        description: 色
+      original_coupon_source:
+        type: string
+        description: オリジナルクーポン画像URL
+      start_date:
+        type: string
+        description: 開始日
+      end_date:
+        type: string
+        description: 終了日
+      rate:
+        type: number
+        description: 割合
+      categories:
+        type: array
+        items:
+          $ref: "#/definitions/private_coupon_category"
+
+  private_coupon_category:
+    type: object
+    properties:
+      id:
+        type: string
+        description: カテゴリID
+      applied:
+        type: boolean
+        description: クーポン適用フラグ
+      name:
+        type: string
+        description: カテゴリ名称
+      subcategories:
+        type: array
+        items:
+          $ref: "#/definitions/private_coupon_subcategory"
+
+  private_coupon_subcategory:
+    type: object
+    properties:
+      id:
+        type: string
+        description: サブカテゴリID
+      applied:
+        type: boolean
+        description: クーポン適用フラグ
+      name:
+        type: string
+        description: サブカテゴリ名称
+      unit:
+        type: string
+        description: 単位
+      unit_price:
+        type: number
+        description: 単価
+      detailed_categories:
+        type: array
+        items:
+          $ref: "#/definitions/private_coupon_detailed_category"
+
+  private_coupon_detailed_category:
+    type: object
+    properties:
+      id:
+        type: string
+        description: 詳細カテゴリID
+      applied:
+        type: boolean
+        description: クーポン適用フラグ
+      name:
+        type: string
+        description: 詳細カテゴリ名称
+      unit:
+        type: string
+        description: 単位
+      unit_price:
+        type: number
+        description: 単価
+
+# 買取情報
+  purchase:
+    type: object
+    properties:
+      id:
+        type: string
+        description: 買取ID
+      datetime:
+        type: string
+        format: date-time
+        description: 買取日時
+      receipt_number:
+        type: string
+        description: レシート番号
+      cashier:
+        type: object
+        properties:
+          id:
+            type: string
+            description: 担当者ID
+          name:
+            type: string
+            description: 担当者氏名
+      price:
+        type: number
+        description: 買取価格
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/purchase_item"
+
+# 買取明細情報
+  purchase_item:
+    type: object
+    properties:
+      id:
+        type: string
+        description: 買取明細ID
+      name:
+        type: string
+        description: 品目
+      unit:
+        type: string
+        description: 単位
+      unit_price:
+        type: number
+        description: 単価
+      quantity:
+        type: number
+        description: 数量
+      coupon:
+        type: object
+        properties:
+          applied:
+            type: boolean
+            description: クーポン適用フラグ
+          rate:
+            type: number
+            description: 割合
+
+# レビュー情報
+  review:
+    type: object
+    properties:
+      id:
+        type: string
+        description: レビューID
+      star:
+        type: number
+        description: 星の数
+      comment:
+        type: string
+        description: コメント
+
+# レジ情報
+  cash_register:
+    type: object
+    properties:
+      advertisement:
+        type: string
+        description: 広告
+      cash_register_categories:
+        type: array
+        items:
+          $ref: "#/definitions/cash_register_category"
+      cashiers:
+        type: array
+        items:
+          $ref: "#/definitions/cashier"
+
+  cash_register_category:
+    type: object
+    properties:
+      id:
+        type: string
+        description: カテゴリID
+      name:
+        type: string
+        description: カテゴリ名称
+      subcategories:
+        type: array
+        items:
+          $ref: "#/definitions/cash_register_subcategory"
+
+  cash_register_subcategory:
+    type: object
+    properties:
+      id:
+        type: string
+        description: サブカテゴリID
+      favorite:
+        type: boolean
+        description: お気に入りフラグ
+      name:
+        type: string
+        description: サブカテゴリ名称
+      unit:
+        type: string
+        description: 単位
+      unit_price:
+        type: number
+        description: 単価
+      detailed_categories:
+        type: array
+        items:
+          $ref: "#/definitions/cash_register_detailed_category"
+
+  cash_register_detailed_category:
+    type: object
+    properties:
+      id:
+        type: string
+        description: 詳細カテゴリID
+      favorite:
+        type: boolean
+        description: お気に入りフラグ
+      name:
+        type: string
+        description: 詳細カテゴリ名称
+      unit:
+        type: string
+        description: 単位
+      unit_price:
+        type: number
+        description: 単価
+
+  cashier:
+    type: object
+    properties:
+      id:
+        type: string
+        description: レジ担当者ID
+      name:
+        type: string
+        description: レジ担当者氏名
+
+# 400エラーレスポンス
+  400:
+    type: "object"
+    properties:
+      result:
+        type: boolean
+        example: false
+        description: 処理結果
+      message:
+        type: string
+        example: ""
+        description: 返却メッセージ
+      error_code:
+        type: integer
+        example: 400
+        description: エラーコード
+      error_message:
+        type: string
+        example: クライアントエラーが発生しました.
+        description: エラーメッセージ
+      data:
+        type: object
+# 401エラーレスポンス
+  401:
+    type: "object"
+    properties:
+      result:
+        type: boolean
+        example: false
+        description: 処理結果
+      message:
+        type: string
+        example: ""
+        description: 返却メッセージ
+      error_code:
+        type: integer
+        example: 401
+        description: エラーコード
+      error_message:
+        type: string
+        example: 認証に失敗しました.
+        description: エラーメッセージ
+      data:
+        type: object
+# 403エラーレスポンス
+  403:
+    type: "object"
+    properties:
+      result:
+        type: boolean
+        example: false
+        description: 処理結果
+      message:
+        type: string
+        example: ""
+        description: 返却メッセージ
+      error_code:
+        type: integer
+        example: 403
+        description: エラーコード
+      error_message:
+        type: string
+        example: アクセスが拒否されました.
+        description: エラーメッセージ
+      data:
+        type: object
+# 500エラーレスポンス
+  500:
+    type: "object"
+    properties:
+      result:
+        type: boolean
+        example: false
+        description: 処理結果
+      message:
+        type: string
+        example: ""
+        description: 返却メッセージ
+      error_code:
+        type: integer
+        example: 500
+        description: エラーコード
+      error_message:
+        type: string
+        example: サーバエラーが発生しました.
+        description: エラーメッセージ
+      data:
+        type: object

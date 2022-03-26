@@ -1,0 +1,116 @@
+<div class="page-purchase">
+  <StoreNavBar :active="'purchase'" />
+  <Loading :isShow="is_loading"></Loading>
+
+  <div class="section px-0">
+    <div class="container">
+
+      <!--div class="purchase-header">
+        <div class="queries">
+          <div class="select">
+            <select v-model="year">
+              <option v-for="y in years" :value="y">{{ y }}</option>
+            </select>
+          </div>
+          <span>年</span>
+          <div class="select">
+            <select v-model="month">
+              <option v-for="m in months" :value="m">{{ m }}</option>
+            </select>
+          </div> 
+          <span>月</span>
+          <div class="select">
+            <select v-model="day">
+              <option :value="null">選択しない</option>
+              <option v-for="d in days" :value="d">{{ d }}</option>
+            </select>
+          </div> 
+          <span>日</span>
+        </div>
+
+        <a class="button is-primary">
+          選択したレシートを<br />PC・タブレットにダウンロードする
+        </a>
+      </div-->
+
+      <div class="purchases">
+        <div class="purchases-header">
+          <div class="date">
+            <div class="date-check">
+              <Checkbox />
+              <p>すべてを選択</p>
+            </div>
+            <div class="date-content">
+              <div>日時</div>
+            </div>
+          </div>
+          <div class="receipt">レシート番号</div>
+          <div class="cashier">担当者</div>
+          <div class="items">品目</div>
+          <div class="price">買取価格</div>
+        </div>
+
+        <div class="purchases-row">
+          <div class="date">
+            <div class="date-check">
+              <Checkbox />
+            </div>
+            <div class="date-content">
+              <span class="date-label">2020年01月01日 20:30</span>
+              <nuxt-link class="date-open" :to="'/purchase/0'">
+                <img src="/images/common/icon-copy-g.png" />
+              </nuxt-link>
+            </div>
+          </div>
+          <div class="receipt">000070417</div>
+          <div class="cashier">山田</div>
+          <div class="items">銅（上）、エアコン</div>
+          <div class="price">¥2,315</div> 
+        </div>
+
+        <div class="purchases-row">
+          <div class="date">
+            <div class="date-check">
+              <Checkbox />
+            </div>
+            <div class="date-content">
+              <span class="date-label">2020年01月01日 20:30</span>
+              <a class="date-open">
+                <img src="/images/common/icon-copy-g.png" />
+              </a>
+            </div>
+          </div>
+          <div class="receipt">000070417</div>
+          <div class="cashier">山田</div>
+          <div class="items">銅（上）、エアコン</div>
+          <div class="price">¥2,315</div> 
+        </div>
+
+        <div class="purchases-row">
+          <div class="date">
+            <div class="date-check">
+              <Checkbox />
+            </div>
+            <div class="date-content">
+              <span class="date-label">2020年01月01日 20:30</span>
+              <a class="date-open">
+                <img src="/images/common/icon-copy-g.png" />
+              </a>
+            </div>
+          </div>
+          <div class="receipt">000070417</div>
+          <div class="cashier">山田</div>
+          <div class="items">銅（上）、エアコン</div>
+          <div class="price">¥2,315</div> 
+        </div>
+      </div><!-- purchases -->
+
+      <div class="purchase-pager">
+        <a class="pager-cell prev" v-if="hasPagerPrev" @click="goPrevPage"><</a>
+        <a class="pager-cell" v-for="p in pages" @click="goPage(p)" :class="{ 'is-active' : isPageActive(p), 'static' : isPageStatic(p) }">{{ p }}</a>
+        <a class="pager-cell next" v-if="hasPagerNext" @click="goNextPage">></a>
+      </div>
+
+    </div>
+  </div>
+</div>

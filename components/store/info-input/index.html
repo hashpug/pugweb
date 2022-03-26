@@ -1,0 +1,205 @@
+<div class="info-input">
+  <div class="field">
+    <label class="label">画像<small>(5枚まで)</small></label>
+    <div class="control no-margin">
+      <div class="image-upload-container">
+        <template v-for="(img, idx) in store.images">
+          <ImageUpload :image="img.source"
+            @change="changeImageFile(idx, $event)" />
+        </template>
+      </div>
+    </div>
+  </div> 
+
+  <hr class="hidden" />
+
+  <div class="field">
+    <label class="label">買取方法</label>
+    <div class="control no-margin purchases">
+      <div>
+        <label class="checkbox">
+          <Checkbox v-model="store.purchase.shop"></Checkbox>
+          <span class="checkbox-label">店舗買取</span>
+        </label>
+      </div>
+      <div>
+        <label class="checkbox">
+          <Checkbox v-model="store.purchase.home"></Checkbox>
+          <span class="checkbox-label">宅配買取</span>
+        </label>
+      </div>
+      <div>
+        <label class="checkbox">
+          <Checkbox v-model="store.purchase.delivery"></Checkbox>
+          <span class="checkbox-label">出張買取</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <hr class="hidden" />
+
+  <label class="label">営業時間</label>
+  <div class="pl-4  has-text-weight-bold">
+    <div class="field">
+      <label class="label">通常の営業時間</label>
+      <div class="control no-margin">
+        <div class="weekday-control" v-for="item in store.business_hours">
+          <div class="weekday">{{ weekLabel(item.week) }}</div>
+          <div class="open-state">
+            <label class="checkbox">
+              <div v-if="!item.holiday">営業日</div>
+              <div v-else>休業日</div>
+              <Toggle v-model="item.holiday" :reverse="true" class="open-toggle"></Toggle>
+            </label>
+          </div>
+          <div class="open-time" v-show="!item.holiday">
+            <div class="dd-input">
+              <DropdownTextInput
+                v-model="item.start_time"
+                @change="setStartTime(item, $event)"
+                :items="startTimes" />
+            </div>
+            <span  v-if="!item.open_24_hours"> − </span>
+            <DropdownTextInput
+              class="dd-input"
+              v-if="!item.open_24_hours"
+              v-model="item.end_time"
+              :items="calcEndTime(item.end_time)" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="hidden" />
+
+    <p class="label">例外の営業時間</p>
+
+    <template v-for="(item, idx) in store.exceptional_business_hours">
+      <div class="field">
+        <div class="control">
+          <div class="weekday-control">
+            <a class="button is-ghost pl-0" @click="spliceArray(store.exceptional_business_hours, idx)">
+              <span class="icon small">
+                <img src="/images/common/icon-times-g.png" />
+              </span>
+            </a>
+            <div class="open-date">
+              <input class="input" type="date">
+            </div>
+            <div class="open-state">
+              <label class="checkbox">
+                <div v-if="!item.holiday">営業日</div>
+                <div v-else>休業日</div>
+                <Toggle v-model="item.holiday" :reverse="true" class="open-toggle"></Toggle>
+              </label>
+            </div>
+            <div class="open-time" v-show="!item.holiday">
+              <div class="dd-input">
+              <DropdownTextInput
+                v-model="item.start_time"
+                @change="setStartTime(item, $event)"
+                :items="startTimes" />
+              </div>
+              <span  v-if="!item.open_24_hours"> − </span>
+              <DropdownTextInput
+                class="dd-input"
+                v-if="!item.open_24_hours"
+                v-model="item.end_time"
+                :items="calcEndTime(item.end_time)" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <a class="add-control" @click="addEBH">
+      <img src="/images/components/store/plus.png" />
+      <p>追加する</p>
+    </a> 
+  </div>
+
+  <hr class="hidden" />
+
+  <p class="label">電話番号（サブ）</p>
+  <div class="field">
+    <div class="control">
+      <input type="telephone" class="input tel" v-model="store.phone_number_sub.phone_number" />
+    </div>
+    <div class="control mt-3">
+      <label class="label small">電話番号（サブ）　備考</label>
+      <div class="is-flex is-align-items-flex-end">
+        <input type="text" class="input tel-note" v-model="store.phone_number_sub.note" maxlength="15" />
+        <span class="label small ml-2">(15文字)</span>
+      </div>
+    </div>
+  </div>  
+
+  <hr class="hidden" />
+
+  <p class="label">URL</p>
+  <div class="field">
+    <label class="label small">ホームページ</label>
+    <div class="control">
+      <input type="text" class="input url" v-model="store.url"
+        :disabled="!store.purchase.shop" />
+    </div>
+  </div> 
+
+  <div class="field">
+    <label class="label small">出張買取用ページ</label>
+    <div class="control">
+      <input type="text" class="input url" v-model="store.delivery_purchase_url" 
+        :disabled="!store.purchase.delivery" />
+    </div>
+  </div> 
+
+  <div class="field">
+    <label class="label small">宅配買取用ページ</label>
+    <div class="control">
+      <input type="text" class="input url" v-model="store.home_purchase_url"
+        :disabled="!store.purchase.home" />
+    </div>
+  </div> 
+
+  <hr class="hidden" />
+
+  <label class="label">認可情報</label>
+  <div class="field is-grouped permits" v-for="(pm, idx) in store.permits">
+    <div class="control is-align-self-flex-end">
+      <a class="button is-ghost px-0" @click="spliceArray(store.permits, idx)">
+        <span class="icon small">
+          <img src="/images/common/icon-times-g.png" />
+        </span>
+      </a>
+    </div>
+    <div class="control">
+      <label class="label small">許認可名</label>
+      <input type="text" class="input" v-model="pm.name" />
+    </div>
+    <div class="control">
+      <label class="label small">番号</label>
+      <input type="text" class="input" v-model="pm.number" />
+    </div> 
+  </div>  
+
+  <a class="add-control" @click="addPermit">
+    <img src="/images/components/store/plus.png" />
+    <p>追加する</p>
+  </a>
+
+  <hr class="hidden" />
+
+  <div class="field">
+    <label class="label">一言</label>
+    <div class="control no-margin">
+      <textarea class="textarea" v-model="store.comment"></textarea>
+    </div>
+    <p class="comment-note label small">（100文字以内）</p>
+  </div>  
+
+  <div class="buttons is-centered">
+    <a class="button is-large is-secondary" @click="submitShopInfo">変更を保存する</a>
+  </div> 
+
+</div>

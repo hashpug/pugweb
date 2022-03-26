@@ -1,0 +1,56 @@
+<div class="page-regi page-regi-update">
+  <StoreNavBar :active="'regi-edit'" />
+  <Loading :isShow="is_loading"></Loading>
+
+  <div class="page-regi-container">
+    <div class="left">
+      <CategorySelect :categories="categories" @change="onChangeCategory" ref="categorySelect" />
+    </div>
+    <div class="center" ref="center">
+      <TabBar @change="onChangeTab" :active_key="tab_active" />
+      <TouchPanel ref="touchPanel" :update="true" :categories="categories"
+        :isOnlyFavorite="doesShowFavorite"
+        @favorite="setFavorite"></TouchPanel>
+    </div>
+    <div class="right">
+
+      <div class="">
+        <div class="buttons is-right my-4">
+          <a class="button is-bordered is-secondary"
+            @click="submit">変更内容を保存する</a>
+        </div>
+
+        <div class="box">
+          <p class="">レジ担当者一覧</p>
+          <div class="cashier-inputs">
+            <div class="input-container" v-for="c in cashiers">
+              <input type="text" class="input name-input"
+                v-model="c.name" />
+            </div>
+          </div>
+          <div class="buttons is-right">
+            <a class="button is-light" @click="addCashier">
+              <div class="icon is-small mr-3">
+                <img src="/images/common/icon-plus-g.png" />
+              </div>
+              追加する
+            </a>
+          </div>
+        </div>
+
+        <div class="box">
+          <p class="">レシート内広告欄内容</p>
+
+          <div class="field">
+            <div class="control">
+              <textarea class="textarea" v-model="advertising_content"></textarea>
+            </div>
+          </div>
+
+
+        </div> 
+
+      </div>
+    </div>
+  </div>
+</div> 

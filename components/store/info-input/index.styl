@@ -1,0 +1,56 @@
+@import '../../../layouts/variables.styl'
+
+.info-input
+  color $color-text-deep
+  .label
+    color $color-text-deep
+  .checkbox-label
+    margin-left .5em
+  .field
+    font-size 14px
+    .label.small
+      font-size 0.5em
+  .input, .textarea
+    color $color-text-deep
+    width 18em
+    &.tel
+      width 13em
+    &.tel-note
+      width 15em
+  .image-upload-container
+    display flex
+    flex-wrap wrap
+  .weekday-control
+    display flex
+    align-items center
+    margin .5em
+    .weekday
+      white-space pre-wrap
+    .dd-input
+      .input
+        width 6em 
+    .open-date
+      .input
+        width 10.5em
+    .open-state
+      margin 0 1em
+    .open-time
+      display flex
+  .purchases
+    font-weight bold
+    > div
+      margin .3em 0
+  .comment-note
+    text-align right
+  .add-control
+    display inline-flex
+    align-items center
+    color $color-grey
+    font-weight bold
+    img
+      width 1.5em
+      height 1.5em
+      margin 0 .5em 0 0
+  .permits
+    .input
+      width 16em

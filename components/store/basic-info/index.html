@@ -1,0 +1,75 @@
+<div class="basic-info">
+  <div class="basic-info-disp" v-if="basicInfo">
+    <p class="title">{{ basicInfo.name }}</p>
+    <div>
+      <span class="icon"></span>
+      <div>
+        <p class="">{{ basicInfo.zip_code }}</p>
+        <p class="">{{ basicInfo.address }}</p>
+      </div>
+    </div>
+    <div>
+      <span class="icon"></span>
+      <div>
+        <p class="">{{ basicInfo.phone_number }}</p>
+      </div> 
+    </div>
+  </div>
+  <div class="basic-info-input" v-if="!basicInfo">
+    <div class="field is-horizontal">
+      <div class="field-label">
+        <label class="label">店舗名</label>
+      </div>
+      <div class="field-body">
+        <div class="field is-narrow">
+          <div class="control">
+            <input type="text" class="input" v-model="name"/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field is-horizontal">
+      <div class="field-label">
+        <label class="label">住所</label>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control zip-code">
+            <span>〒</span>
+            <input type="text" class="input" v-model="zip_code" />
+            <p class="help has-text-right">（ハイフンなし）</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field is-horizontal">
+      <div class="field-label"></div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <input type="text" class="input" v-model="address" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field is-horizontal">
+      <div class="field-label">
+        <label class="label">電話番号</label>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control telephone">
+            <input type="telephone" class="input" v-model="phone_number" />
+            <p class="help has-text-right">（ハイフンなし）</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="attention is-size-7">店舗名・住所・電話番号(固定)は確定後、変更できません。やむを得ず変更したい場合は運営へ<a>お問い合わせ</a>ください。</p>
+
+  </div>
+</div>

@@ -1,0 +1,286 @@
+<div class="page-register">
+  <NavBar />
+  <TabBar :items="tab_items" :active_key="active_key" />
+  <Loading :isShow="is_loading"></Loading>
+
+  <div class="hero-image">
+    <div class="hero-image-content">
+      <img class="image" src="/images/register/hero.png">
+      <a class="button is-secondary is-bordered">
+        30日間の無料掲載を試す
+      </a> 
+    </div>
+  </div>
+
+  <section class="section merit">
+    <div class="container">
+
+      <h1 class="caption">掲載のメリット</h1>
+
+      <div class="columns">
+        <div class="column is-4">
+          <div class="box">
+            <img class="m-auto" src="/images/register/effect.png" width="188" />
+            <p class="has-text-centered has-text-primary has-text-weight-bold is-size-4">集客効果</p>
+          </div>
+        </div>
+        <div class="column is-4">
+          <div class="box">
+            <img class="m-auto" src="/images/register/regi.png" width="193" />
+            <p class="has-text-centered has-text-primary has-text-weight-bold is-size-4">買取専用レジ</p>
+          </div>
+        </div>
+        <div class="column is-4">
+          <div class="box">
+            <img class="m-auto" src="/images/register/admin.png" width="240" />
+            <p class="has-text-centered has-text-primary has-text-weight-bold is-size-4">買取管理画面</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section><!-- 掲載のメリット -->
+
+  <section class="section merit2">
+    <div class="container">
+      <div class="columns is-justify-content-space-between">
+        <div class="column is-narrow">
+          <p class="mb-4 has-text-primary has-text-weight-bold is-size-3">集客効果</p>
+          <p class="my-2">店舗情報や営業時間などの基本情報はもちろん、</p>
+          <p class="my-2">取扱品やクーポンを掲載することで、</p>
+          <p class="my-2">今までになかった効果的な集客が可能になります</p>
+        </div>
+        <div class="column is-narrow">
+          <img class="m-auto" src="/images/register/effect.png" width="188" />
+        </div>
+      </div>
+
+      <div class="columns is-justify-content-space-between mt-6">
+        <div class="column is-narrow">
+          <p class="mb-4 has-text-weight-bold is-size-5">クーポンを簡単作成・掲載！</p>
+          <p class="mb-4 is-size-7">クーポンを簡単に作れます</p>
+          <p class="is-size-7">作ったクーポンは近くを通るドライバーの方に</p>
+          <p class="mb-4 is-size-7">自動で流れます</p>
+          <p class="is-size-7">お気に入り登録をしている顧客には</p>
+          <p class="mb-4 is-size-7">自動でクーポンが通知されます</p>
+        </div>
+        <div class="column is-narrow coupon-stamp">
+          <img class="m-auto coupon-stamp-coupons" src="/images/register/coupons.png" width="260" />
+          <img class="m-auto coupon-stamp-image" src="/images/register/stamp_coupon.png" width="120" />
+        </div>
+      </div>
+
+
+      <div class="columns is-justify-content-space-between">
+        <div class="column is-narrow">
+          <p class="mb-4 has-text-primary has-text-weight-bold is-size-3">買取専用レジ</p>
+          <p class="my-2">お使いのPC・スマホ・タブレットをレジとして</p>
+          <p class="my-2">ご使用いただけます。プリンターと接続すること</p>
+          <p class="my-2">で、簡単にレシートを発行することもできます</p>
+        </div>
+        <div class="column is-narrow">
+          <img class="m-auto" src="/images/register/regi.png" width="188" />
+        </div>
+      </div>
+      <p class="is-size-7">※レジ機能は任意でご利用可能です。追加料金はございません。</p>
+      <div class="regi-screen">
+        <img class="regi-screen-image" src="/images/register/regi_screen.png" />
+        <img class="m-auto stamp-easy" src="/images/register/stamp_easy.png" width="100" />
+        <img class="m-auto stamp-search" src="/images/register/stamp_search.png" width="120" />
+      </div>
+
+      <div class="receipts mt-6">
+        <img class="receipts-image" src="/images/register/receipts.png" />
+        <img class="m-auto stamp-receipt" src="/images/register/stamp_receipt.png" width="120" />
+      </div>
+
+      <div class="columns is-justify-content-space-between">
+        <div class="column is-narrow">
+          <p class="mb-4 has-text-primary has-text-weight-bold is-size-3">買取管理画面</p>
+          <p class="my-2">お使いのPC・スマホ・タブレットをレジとして</p>
+          <p class="my-2">ご使用いただけます。プリンターと接続すること</p>
+          <p class="my-2">で、簡単にレシートを発行することもできます</p>
+        </div>
+        <div class="column is-narrow">
+          <img class="m-auto" src="/images/register/regi.png" width="188" />
+        </div>
+      </div> 
+
+    </div>
+  </section>
+
+  <TrialBar />
+
+  <section class="section flow">
+    <div class="container">
+      <h1 class="caption">掲載の流れ</h1>
+
+      <div class="columns">
+        <div class="column is-4">
+          <div class="box">
+            <p class="has-text-centered has-text-weight-bold mb-3">step.1</p>
+            <p class="has-text-centered has-text-primary has-text-weight-bold is-size-4">基本情報を<br/>登録する</p>
+          </div>
+        </div>
+        <div class="column is-4">
+          <div class="box">
+            <p class="has-text-centered has-text-weight-bold mb-3">step.2</p>
+            <p class="has-text-centered has-text-primary has-text-weight-bold is-size-4">店舗の詳細情報を<br />入力する</p>
+          </div>
+        </div>
+        <div class="column is-4">
+          <div class="box">
+            <p class="has-text-centered has-text-weight-bold mb-3">step.3</p>
+            <p class="is-flex is-flex-direction-column is-justify-content-center has-text-centered has-text-primary has-text-weight-bold is-size-4" style="height: 100%">掲載完了！</p>
+          </div>
+        </div>
+      </div> 
+
+    </div>
+  </section><!-- 仕組み -->
+
+  <section class="section register">
+    <div class="container">
+      <h1 class="caption">掲載登録をする</h1>
+
+      <div class="box">
+        <div class="box-content">
+          <p class="label">掲載登録をする買取店舗さまへ</p>
+          <p class="label">掲載登録に必要となる基本情報を入力してください<span class="required">のついている項目は必須事項です。</span></p>
+
+          <div class="field mt-6">
+            <label class="label required">ログインID<small>（メールアドレス）</small></label>
+            <div class="control">
+              <input type="text" class="input" v-model="email" :class="{ 'is-danger' : emailError }" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label required">ログインID<small>（確認用）</small></label>
+            <div class="control">
+              <input type="text" class="input" v-model="email_conf" :class="{ 'is-danger' : emailConfError }"/>
+            </div>
+          </div>
+
+          <hr class="hidden" />
+
+          <div class="field">
+            <label class="label required">パスワード<small>（英字の大文字小文字、数字を必ず含む、8文字以上で入力してください）</small></label>
+            <div class="control">
+              <input type="text" class="input" v-model="password" :class="{ 'is-danger' : passwordError }"/>
+            </div>
+          </div> 
+
+
+          <div class="field">
+            <label class="label required">パスワード<small>（確認用）</small></label>
+            <div class="control">
+              <input type="text" class="input" v-model="password_conf" :class="{ 'is-danger' : passwordConfError }"/>
+            </div>
+          </div>
+
+          <hr class="hidden" />
+
+          <div class="field">
+            <label class="label required">管理者用 暗証番号<small>（確認用）</small></label>
+            <div class="control">
+              <input type="text" class="input" v-model="pin" :class="{ 'is-danger' : pinError }"/>
+            </div>
+          </div> 
+
+          <label class="label required mt-6">お支払い<small>（登録開始後30日間を経過後、引き落としが確定されます）</small></label>
+
+
+          <div class="box-content">
+            <label class="label my-4">クレジットカード</label>
+            <div class="columns">
+              <div class="column is-6">
+                <div class="field">
+                  <label class="label">カード番号</label>
+                  <div class="control dammy-control">
+                    <div class="input input-dammy"></div>
+                    <div class="stripe-input" id="card-number"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-6">
+                <div class="field">
+                  <label class="label">有効期限</label>
+                  <div class="control dammy-control">
+                    <div class="input input-dammy"></div>
+                    <div class="stripe-input" id="card-expiry"></div>
+                  </div>
+                </div>
+              </div> 
+            </div>
+
+            <div class="columns">
+              <div class="column is-6">
+                <div class="field">
+                  <label class="label">セキュリティコード</label>
+                  <div class="control dammy-control">
+                    <div class="input input-dammy"></div>
+                    <div class="stripe-input" id="card-cvc"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-6">
+                <div class="field">
+                  <label class="label">名前</label>
+                  <div class="control">
+                    <input type="text" class="input" />
+                  </div>
+                </div>
+              </div> 
+            </div>
+          </div>
+          
+          <hr class="hidden" />
+          <hr class="hidden" />
+
+          <label class="label">招待コードをお持ちの方</label>
+          <div class="box-content mt-4">
+            <div class="field">
+              <label class="label">招待コード</label>
+              <div class="control">
+                <input type="text" class="input" v-model="invite_code" />
+              </div>
+            </div>
+          </div>
+
+          <hr class="hidden" />
+          <hr class="hidden" />
+
+          <div class="terms">
+            <p class="terms-title">サービス利用規約</p>
+
+            <div class="field check-terms">
+              <div class="control my-2">
+                <label class="checkbox is-inline-flex">
+                  <Checkbox v-model="has_agreement" />
+                  <span class="ml-1 is-size-7 has-text-weight-bold">利用規約に同意する</span>
+                </label>
+              </div>
+            </div> 
+          </div>
+
+          <hr class="hidden" />
+
+          <div class="buttons is-centered">
+            <a class="button is-primary is-bordered is-large" @click="register">
+              <span class="is-size-6 has-text-weight-bold">掲載登録する</span>
+            </a> 
+          </div>
+
+          <p class="help has-text-weight-bold has-text-centered">30日間の無料掲載後は、自動的に有料期間(月額3万3千円税込)に移行します。いつでも退会できます。</p>
+        </div>
+      </div><!-- box-content -->
+    </div><!-- box -->
+  </section>
+
+
+  <FooterBar />
+
+
+
+</div> 

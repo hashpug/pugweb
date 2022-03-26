@@ -1,0 +1,94 @@
+@import '../layouts/variables.styl'
+
+.page-top
+  .movie
+    position relative
+    width 100%
+    &:before
+      display block
+      content ''
+      padding-top ((1362/2430)*100)%
+    .movie-content
+      .video
+        position absolute
+        top 0
+        bottom 0
+        left 0
+        right 0
+        overflow hidden 
+        width 65%
+        min-width 100%
+        height 100%
+        object-fit cover
+
+// section個別
+  .whatis
+    .left-text
+      width 9em
+      margin auto
+    
+  .feature
+    background-color $color-grey-super-lite
+    .preview-wrapper
+      margin 9em 0
+      .preview
+        display flex
+        flex-direction column
+        align-items center
+        @media size-is-mobile
+          flex-direction column-reverse
+        .preview-images
+          position relative
+          .smartphone
+            display block
+            margin auto
+          .stamp
+            position absolute
+            right -30%
+            top 58%
+            @media size-is-mobile
+              display none
+        .preview-texts
+          margin-top 3em
+          margin-bottom 1em
+        &.preview_00
+          .stamp
+            top -12%
+  .owners
+    .columns
+      margin 3em
+
+  .campaign
+    background-color $color-primary
+    color #fff
+    .caption
+      &:before
+        background-color #fff
+    .details
+      p
+        margin .5em 0
+  .app
+    background-color $color-grey-super-lite
+    .app-install
+      display flex
+      flex-direction column
+      justify-content center
+      align-items center
+      font-size 1.3rem
+      p
+        margin-bottom 1em
+      .appstore-image, .googleplay-image
+        display block
+        width auto
+        height 50px
+        margin auto
+
+  .notice
+    .notice-button
+      color #999
+      border 1px solid #999
+      font-size 0.9em
+      font-weight bold
+      padding-left 2em
+      padding-right 2em
+

@@ -1,0 +1,62 @@
+<div class="page-coupons">
+  <StoreNavBar :active="'coupon'" />
+  <Loading :isShow="is_loading"></Loading>
+  <div class="section">
+    <div class="container">
+      <div class="is-flex is-align-items-center is-justify-content-space-between">
+        <p>クーポン一覧（クーポンは同時に最大3つまで）</p>
+        <nuxt-link to="/coupons/create" class="button is-secondary">
+          <span class="icon is-small mr-3">
+            <img src="/images/common/icon-plus-w.png" />
+          </span>
+          新規作成する
+        </nuxt-link>
+      </div>
+
+      <hr class="hidden" />
+
+      <table class="table is-striped is-fullwidth is-borderless">
+        <thead>
+          <tr class="has-text-centered">
+            <th>作成日</th>
+            <th>画像</th>
+            <th>内容</th>
+            <th>有効期限</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="c in coupons" class="has-text-centered">
+            <td>
+              <p>{{ c.start_date }}</p>
+              <div>
+                <nuxt-link :to="'/coupons/' + c.id" class="button is-primary is-small">
+                  編集する
+                </nuxt-link>
+              </div>
+            </td>
+            <td>
+              <div>
+                <img v-if="c.original_image_source" :src="c.original_image_source" />
+                <CouponPreview 
+                  v-else
+                  :colorNumber="c.color_number"
+                  :content="c.content"
+                  :name="store_name"
+                  :endDate="c.end_date" />
+              </div>
+            </td>
+            <td>
+              <p>{{ c.content }}</p>
+            </td>
+            <td>
+              <p>{{ c.end_date }}</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,141 @@
+<div class="product-input">
+  <Loading :isShow="is_loading"></Loading>
+  <div v-if="!checkOnly">
+    <p class="is-size-6 has-text-weight-bold">取扱製品</p>
+
+    <hr class="hidden" />
+
+    <div class="media">
+      <figure class="media-left">
+        <div class="image is-64x64">
+          <img src="/images/components/store/product-input/attention.png">
+        </div>
+      </figure>
+      <div class="media-content">
+        <div class="content">
+          <p class="text-lite">買取価格が変動した場合は、必ず即時更新して頂くようお願いいたします。利用者より価格のズレの報告が多数寄せられた場合、掲載登録を解除させていただく事があります。</p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="hidden" />
+  </div>
+
+  <div class="columns">
+    <div class="column is-7">
+      <p class="has-text-weight-bold mb-3">製品名</p>
+      <p class="text-lite is-size-7 mb-3">※チェックマークの入った製品は、<br />お取り扱い製品としてアプリ上で公開されます。</p>
+      <div class="field">
+        <div class="control has-icons-left">
+          <input type="text" class="input is-rounded search-input" placeholder="キーワードで探す" v-model="search_word">
+          <span class="icon is-small is-left">
+            <img src="/images/components/store/product-input/search.png" />
+          </span>
+        </div>
+        <p class="text-lite is-size-7 mt-3">※全ての製品を表示したい場合は、検索欄を全て消してください。</p>
+      </div>
+    </div>
+
+    <div class="column is-5">
+      <p class="has-text-weight-bold mb-3">金額</p>
+      <p v-if="!checkOnly" class="text-lite is-size-7">※処分代として表記する場合は、金額の前にマイナス「-」をつけてください。</p>
+    </div>
+  </div>
+
+  <hr class="hidden" />
+
+  <template v-for="(cat, cat_idx) in cloned_all_categories">
+    <ProductInputCategory v-show="cat._show || !search_word"
+      :category="cat"
+      @change="changeCategory(cat, $event)"
+      @toggle="changeCatOpen(cat)"  
+      @hit="onSearchHit(cat, $event)"
+      :search="search_word"
+      :checkOnly="checkOnly"
+      :key="render_version + '_' + cat_idx"
+      :open="cat.open"></ProductInputCategory>
+    <template v-for="(sub, sub_idx) in cat.subcategories" v-if="cat.open">
+      <ProductInputItem v-show="cat._show || !search_word"
+        :search="search_word"
+        :available="sub.available"
+        :unit_price="sub.unit_price + ''"
+        :unit="sub.unit"
+        :name="sub.name"
+        :checkOnly="checkOnly"
+        :key="render_version + '_' + cat_idx + '_' + sub_idx"
+        @hit="onSearchHit(cat, $event)"
+        @addDetail="addDetail(sub)"
+        @change="changeItem(sub, $event)"></ProductInputItem>
+      <template v-for="det in sub.detailed_categories">
+        <ProductInputItem v-show="cat._show || !search_word"
+          @hit="onSearchHit(cat, $event)"
+          :available="det.available"
+          :unit_price="det.unit_price + ''"
+          :unit="det.unit"
+          :name="det.name"
+          :checkOnly="checkOnly"
+          :search="search_word"
+          :key="render_version + '_' + cat_idx + '_' + sub_idx + '_' + det.id"
+          :detailed="true" @change="changeItem(det, $event)"></ProductInputItem>
+      </template>
+    </template>
+  </template>
+
+  <div class="columns">
+    <div class="column is-7">
+      <a class="category-apply has-text-primary has-text-weight-bold" @click="openApplication">
+        <img src="/images/components/store/product-input/plus-blue.png" class="icon" />
+        <p>新しく製品名枠を申請する</p>
+      </a>
+    </div>
+  </div>
+
+  <hr class="hidden" />
+
+  <div class="buttons is-centered">
+    <a class="button is-large is-secondary" @click="submitProduct">変更を保存する</a>
+  </div>
+
+  <SimpleConfirm v-if="!checkOnly" :show="does_show_application" @cancel="does_show_application = false;">
+    <div class="product-application">
+      <p class="has-text-weight-bold has-text-primary">新しく製品名枠を申請する</p>
+      <hr class="hidden" />
+
+      <div class="attention mt-3">
+        <div class="image is-32x32 mr-3">
+          <img src="/images/components/store/product-input/attention.png">
+        </div>
+        <p class="has-text-weight-bold is-size-7">すでに、別名で同じ品目がないかお確かめください。</p>
+      </div>
+
+      <hr class="hidden" />
+
+      <div class="field is-grouped is-justify-content-center">
+        <div class="field mr-4">
+          <label class="label has-text-weight-normal is-size-7 mb-0">製品名</label>
+          <div class="control">
+            <input class="input is-rounded product-name" type="text">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label has-text-weight-normal is-size-7 mb-0">単位</label>
+          <div class="control">
+            <input class="input is-rounded product-dim" type="text">
+          </div>
+        </div>
+      </div>
+
+      <hr class="hidden" />
+
+      <div class="buttons is-centered">
+        <a class="button is-primary is-large">
+          申請する
+        </a>
+      </div>
+
+      <p class="has-text-weight-bold has-text-centered is-size-7">申請をされた製品名は、審査を通った場合に反映されます。</p>
+      <p class="has-text-weight-bold has-text-centered is-size-7">審査には期間を要しますので、あらかじめご了承ください。</p>
+    </div>
+  </SimpleConfirm>
+
+</div>
